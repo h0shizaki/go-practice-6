@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  db : 
+    image : postgres
+    restart : always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 4321
+      POSTGRES_DB: postgres_gql
+    ports:
+      - '5432:5432'
+    volumes: 
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - data:/var/lib/postgresql/data
+
+  backend-go : 
+    
+    build : 
+      context : .
+      dockerfile : Dockerfile
+
+    environment :
+      PORT: 3030
+      DBHOST: host.docker.internal
+      DBPORT: 5432
+      DBUSER: root
+      DBPASS: 4321
+      DBNAME: postgres_gql
+      ENV: Production
+
+    depends_on : 
+      - db
+
+    ports : 
+      - "3030:3030"
+
+    networks :
+      - default
+
+
+volumes:
+  data:
+
