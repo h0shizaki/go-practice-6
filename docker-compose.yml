@@ -14,10 +14,10 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - data:/var/lib/postgresql/data
 
-  backend-go : 
-    
+  graphQL-go : 
+
     build : 
-      context : .
+      context : ./Graphql-Server
       dockerfile : Dockerfile
 
     environment :
@@ -38,6 +38,29 @@ services:
     networks :
       - default
 
+
+  REST-go : 
+    build : 
+      context : ./REST-Server
+      dockerfile : Dockerfile
+
+    environment :
+      PORT: 4000
+      DBHOST: host.docker.internal
+      DBPORT: 5432
+      DBUSER: root
+      DBPASS: 4321
+      DBNAME: postgres_gql
+      ENV: Production
+
+    depends_on : 
+      - db
+
+    ports : 
+      - "4000:4000"
+
+    networks :
+      - default
 
 volumes:
   data:
