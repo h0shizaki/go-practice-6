@@ -14,4 +14,4 @@ INSERT INTO users(name,age,profession,friendly) VALUES
   ( 'alex', 26, 'zoo keeper', false),
   ( 'becky', 67, 'retired', false),
   ( 'kevin', 15, 'in school', true),
-  ( 'frankie', 45, 'teller', true),
+  ( 'frankie', 45, 'teller', true);
