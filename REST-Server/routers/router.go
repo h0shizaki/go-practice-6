@@ -1,9 +1,17 @@
 package routers
 
-// func (app *application) routes() http.Handler {
-// 	router := httprouter.New()
+import (
+	"net/http"
+	"rest-server/data/status"
+	"rest-server/utils/cor"
 
-// 	router.HandlerFunc(http.MethodGet, "/api", users.getAllHandler() *getFrom handler )
+	"github.com/julienschmidt/httprouter"
+)
 
-// 	return app.enableCORS(router)
-// }
+func CreateRoutes() http.Handler {
+	router := httprouter.New()
+
+	router.HandlerFunc(http.MethodGet, "/api/status", status.StatusHandler)
+
+	return cor.EnableCORS(router)
+}
