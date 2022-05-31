@@ -1,3 +1,7 @@
 package users
 
-//CRUD
+import "net/http"
+
+func GetAllUserHandler(w http.ResponseWriter, r *http.Request) {
+
+}

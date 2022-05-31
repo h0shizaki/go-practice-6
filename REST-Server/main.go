@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"rest-server/config"
@@ -8,8 +9,12 @@ import (
 	"rest-server/routers"
 )
 
+type Application struct {
+	Config   *config.Config
+	Database *sql.DB
+}
+
 func main() {
-	fmt.Println("Hi")
 
 	appConfig, err := config.NewConfig()
 	if err != nil {
@@ -21,6 +26,11 @@ func main() {
 		panic(err)
 	}
 	defer db.Close()
+
+	// app := &Application{
+	// 	Config:   appConfig,
+	// 	Database: db,
+	// }
 
 	router := routers.CreateRoutes()
 
