@@ -1,20 +1,15 @@
 package config
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+	"server/log"
 	"server/utils/env"
+	"time"
 
 	_ "github.com/lib/pq"
 )
-
-type Database struct {
-	Host     string
-	Port     string
-	User     string
-	DB       string
-	Password string
-}
 
 var DB *sql.DB
 
@@ -22,31 +17,28 @@ func init() {
 
 	env.CheckENV()
 
-	dbConfig := &Database{
-		env.MustGet("DBHOST"),
-		env.MustGet("DBPORT"),
-		env.MustGet("DBUSER"),
-		env.MustGet("DBNAME"),
-		env.MustGet("DBPASS"),
-	}
-
 	DB, err := sql.Open("postgres",
 		fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-			dbConfig.Host,
-			dbConfig.Port,
-			dbConfig.User,
-			dbConfig.Password,
-			dbConfig.DB),
+			env.MustGet("DBHOST"),
+			env.MustGet("DBPORT"),
+			env.MustGet("DBUSER"),
+			env.MustGet("DBPASS"),
+			env.MustGet("DBNAME")),
 	)
 
 	if err != nil {
 		panic("Error connecting to database")
 	}
 
-	err = DB.Ping()
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err = DB.PingContext(ctx)
 
 	if err != nil {
 		panic("Error connecting to database")
 	}
+
+	log.Log.LogInfo("Connected to database")
 
 }
