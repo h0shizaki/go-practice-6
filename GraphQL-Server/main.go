@@ -9,6 +9,7 @@ import (
 	"go-gql/utils/env"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/go-chi/chi"
@@ -23,16 +24,20 @@ type Config struct {
 }
 
 func main() {
+	log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	log.Println("Prepare to start")
 
 	var config Config
 	env.CheckENV()
 	flag.StringVar(&config.Env, "environment", env.MustGet("ENV"), "ENV")
 	flag.StringVar(&config.Port, "port", env.MustGet("PORT"), "Port")
 
+	log.Println("Loaded config")
+
 	db, router := initAPI()
 	defer db.Close()
 
-	fmt.Println(config.Env)
+	log.Println("GraphQL Server is running on port", config.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", config.Port), router))
 }
 
@@ -54,6 +59,8 @@ func initAPI() (*postgres.Db, *chi.Mux) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	log.Println("Connected to database")
 
 	rootQuery := gql.NewRoot(db)
 
