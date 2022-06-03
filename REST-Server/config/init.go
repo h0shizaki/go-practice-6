@@ -6,8 +6,8 @@ import (
 )
 
 type Config struct {
-	port string
-	env  string
+	Port string
+	Env  string
 	db   struct {
 		Host     string
 		Port     string
@@ -28,8 +28,16 @@ func LoadConfig() Config {
 		port = "4040"
 	}
 
-	flag.StringVar(&cfg.port, "port", port, "Server port will be listen on")
-	flag.StringVar(&cfg.env, "environment", env.MustGet("ENV"), "Application environment")
+	// cfg.Port = port
+	// cfg.Env = env.MustGet("ENV")
+
+	flag.StringVar(&cfg.Port, "port", port, "Server port will be listen on")
+	flag.StringVar(&cfg.Env, "environment", env.MustGet("ENV"), "Application environment")
+	// cfg.db.Host = env.MustGet("DBHOST")
+	// cfg.db.Port = env.MustGet("DBPORT")
+	// cfg.db.User = env.MustGet("DBUSER")
+	// cfg.db.Password = env.MustGet("DBPASS")
+	// cfg.db.Dbname = env.MustGet("DBNAME")
 
 	flag.StringVar(&cfg.db.Host, "database host", env.MustGet("DBHOST"), "localhost")
 	flag.StringVar(&cfg.db.Port, "database port", env.MustGet("DBPORT"), "5432")
