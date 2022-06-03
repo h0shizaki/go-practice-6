@@ -37,7 +37,7 @@ func main() {
 
 	router := routers.CreateRoute(model)
 
-	log.Println("Server is running on port", cfg.Port)
+	log.Println("REST Server is running on port", cfg.Port)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", cfg.Port),

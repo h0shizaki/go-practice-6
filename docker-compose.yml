@@ -22,11 +22,6 @@ services:
 
     environment :
       PORT: 3030
-      DBHOST: host.docker.internal
-      DBPORT: 5432
-      DBUSER: root
-      DBPASS: 4321
-      DBNAME: postgres_gql
       ENV: Production
 
     depends_on : 
@@ -39,28 +34,23 @@ services:
       - default
 
 
-  # rest-go : 
-  #   build : 
-  #     context : ./REST-Server
-  #     dockerfile : Dockerfile
+  rest-go : 
+    build : 
+      context : ./REST-Server
+      dockerfile : Dockerfile
 
-  #   environment :
-  #     PORT: 4000
-  #     DBHOST: host.docker.internal
-  #     DBPORT: 5432
-  #     DBUSER: root
-  #     DBPASS: 4321
-  #     DBNAME: postgres_gql
-  #     ENV: Production
+    environment :
+      PORT: 4040
+      ENV: Production
 
-  #   depends_on : 
-  #     - db
+    depends_on : 
+      - db
 
-  #   ports : 
-  #     - "4000:4000"
+    ports : 
+      - "4040:4040"
 
-  #   networks :
-  #     - default
+    networks :
+      - default
 
 volumes:
   data:
