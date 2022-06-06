@@ -28,7 +28,7 @@ func main() {
 	db, err := config.OpenDB(cfg)
 
 	if err != nil {
-		log.Println("Failed connecting to database")
+		log.Panic("Failed connecting to database")
 	}
 
 	log.Println("Connected to database")

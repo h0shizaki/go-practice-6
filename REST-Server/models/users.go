@@ -1,6 +1,10 @@
 package models
 
-import "log"
+import (
+	"context"
+	"log"
+	"time"
+)
 
 type User struct {
 	ID         int
@@ -10,15 +14,91 @@ type User struct {
 	Friendly   bool
 }
 
-func (m *DBModel) AllUser() ([]User, error) {
-	stmt, err := m.DB.Prepare("SELECT * FROM users ")
+func (m *DBModel) DeleteUser(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt, err := m.DB.Prepare("DELETE FROM users where id = $1")
 
 	if err != nil {
-		log.Println("GetAll Preparation Err: ", err)
+		log.Println("Delete user Preparation Err:", err)
+		return err
+	}
+
+	_, err = stmt.ExecContext(ctx, id)
+
+	if err != nil {
+		log.Println("Delete user execute Err:", err)
+		return err
+	}
+
+	return nil
+}
+
+func (m *DBModel) InsertUser(payload User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt, err := m.DB.Prepare("INSERT INTO users(name,age,profession,friendly) values($1,$2,$3,$4) ;")
+
+	if err != nil {
+		log.Println("Insert user Preparation Err:", err)
+		return err
+	}
+
+	_, err = stmt.ExecContext(ctx, payload.Name, payload.Age, payload.Profession, payload.Friendly)
+
+	if err != nil {
+		log.Println("Insert user execute Err:", err)
+		return err
+	}
+
+	return nil
+}
+
+func (m *DBModel) GetUser(id int) (*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt, err := m.DB.Prepare("SELECT * FROM users where id = $1")
+
+	if err != nil {
+		log.Println("GetOne Preparation Err:", err)
 		return nil, err
 	}
 
-	rows, err := stmt.Query()
+	row := stmt.QueryRowContext(ctx, id)
+
+	var user User
+
+	err = row.Scan(
+		&user.ID,
+		&user.Name,
+		&user.Age,
+		&user.Profession,
+		&user.Friendly,
+	)
+
+	if err != nil {
+		log.Println("GetOne Err:", err)
+		return nil, err
+	}
+
+	return &user, nil
+
+}
+
+func (m *DBModel) AllUser() ([]User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt, err := m.DB.Prepare("SELECT * FROM users ")
+
+	if err != nil {
+		log.Println("GetAll Preparation Err:", err)
+		return nil, err
+	}
+
+	rows, err := stmt.QueryContext(ctx)
 
 	if err != nil {
 		log.Println("GetAll Err: ", err)
@@ -37,7 +117,7 @@ func (m *DBModel) AllUser() ([]User, error) {
 			&r.Profession,
 			&r.Friendly,
 		); err != nil {
-			log.Println("Error scanning rows Err: ", err)
+			log.Println("Error scanning rows Err:", err)
 		}
 		users = append(users, r)
 	}
